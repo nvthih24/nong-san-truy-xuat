@@ -21,7 +21,7 @@
 ## 📦 Cài đặt
 
 ```bash
-git clone https://github.com/nvthih24/phat-trien-dapp-nong-san.git
-cd phat-trien-dapp-nong-san
+git clone https://github.com/nvthih24/nong-san-truy-xuat.git
+cd nong-san-truy-xuat
 npm install
 npm start
