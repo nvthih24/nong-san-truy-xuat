@@ -1,17 +1,17 @@
-const { ethers } = require('ethers');
-require('dotenv').config();
+const hre = require("hardhat");
 
 async function main() {
-  const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+  const [deployer] = await hre.ethers.getSigners(); // Lấy signer đầu tiên (deployer)
+  console.log("Deploying contracts with the account:", deployer.address);
 
-  const abi = [ /* Paste ABI from Traceability.sol */ ];
-  const bytecode = '0x7106755B33312203e76D214E234d5c23960254Fd'; // Get from Remix/Hardhat
-  const factory = new ethers.ContractFactory(abi, bytecode, wallet);
-  const contract = await factory.deploy();
+  const ProductTraceability = await hre.ethers.getContractFactory("ProductTraceability");
+  const contract = await ProductTraceability.deploy(deployer.address); // Truyền deployer.address vào constructor
+
   await contract.waitForDeployment();
-
-  console.log('Contract deployed at:', contract.target);
+  console.log("Contract deployed to:", await contract.getAddress());
 }
 
-main().catch((error) => console.error(error));
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
