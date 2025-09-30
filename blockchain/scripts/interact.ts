@@ -13,7 +13,7 @@ async function main() {
   const signer = await provider.getSigner(0);
 
   // Địa chỉ contract sau khi bạn deploy Counter
-  const contractAddress = "0x2546bcd3c84621e976d8185a91a922ae77ecec30 ";  // ⚠️ thay bằng địa chỉ deploy thực tế
+  const contractAddress = "0x7106755B33312203e76D214E234d5c23960254Fd";  // ⚠️ thay bằng địa chỉ deploy thực tế
 
   // Lấy ABI từ Counter.json
   const abi = CounterArtifact.abi;
