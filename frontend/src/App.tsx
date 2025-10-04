@@ -24,7 +24,7 @@ declare global {
   }
 }
 
-const CONTRACT_ADDRESS = "0x0dF050d05D426cd2178c6f5f27a970fD6240245A";
+const CONTRACT_ADDRESS = "0x48Ba82C9F6dA09614EB816bF476E5172179FA3Cb";
 
 const App: React.FC = () => {
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
@@ -164,3 +164,5 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+//npx hardhat run scripts/deploy.js --network pionezero

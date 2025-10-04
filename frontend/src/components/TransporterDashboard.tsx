@@ -9,14 +9,13 @@ interface TransporterDashboardProps {
 
 const TransporterDashboard: React.FC<TransporterDashboardProps> = ({ contract, account, connectWallet }) => {
   const [transporterName, setTransporterName] = useState<string>('');
-  const [productName, setProductName] = useState<string>('');
   const [productId, setProductId] = useState<string>('');
   const [receiveDate, setReceiveDate] = useState<string>('');
   const [deliveryDate, setDeliveryDate] = useState<string>('');
   const [transportInfo, setTransportInfo] = useState<string>('');
 
   const updateTrace = async () => {
-    if (!contract || !transporterName || !productName || !productId || !receiveDate || !deliveryDate || !transportInfo) {
+    if (!contract || !transporterName || !productId || !receiveDate || !deliveryDate || !transportInfo) {
       alert('Vui lòng điền đầy đủ thông tin!');
       return;
     }
@@ -32,14 +31,13 @@ const TransporterDashboard: React.FC<TransporterDashboardProps> = ({ contract, a
         return;
       }
 
-      // Chuyển ngày nhận hàng và ngày giao hàng thành timestamp (Unix seconds)
+      // Chuyển ngày thành timestamp
       const receiveTimestamp = Math.floor(new Date(receiveDate).getTime() / 1000);
       const deliveryTimestamp = Math.floor(new Date(deliveryDate).getTime() / 1000);
 
-      // Gọi hàm updateTrace với các tham số mới
+      // Gọi hàm updateTrace
       const tx = await contract.updateTrace(
         productId,
-        productName,
         transporterName,
         receiveTimestamp,
         deliveryTimestamp,
@@ -47,9 +45,7 @@ const TransporterDashboard: React.FC<TransporterDashboardProps> = ({ contract, a
       );
       await tx.wait();
       alert('Cập nhật trace thành công!');
-      // Reset form
       setTransporterName('');
-      setProductName('');
       setProductId('');
       setReceiveDate('');
       setDeliveryDate('');
@@ -75,13 +71,6 @@ const TransporterDashboard: React.FC<TransporterDashboardProps> = ({ contract, a
           placeholder="Tên đơn vị vận chuyển"
           value={transporterName}
           onChange={(e) => setTransporterName(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Tên sản phẩm"
-          value={productName}
-          onChange={(e) => setProductName(e.target.value)}
           required
         />
         <input
@@ -119,4 +108,3 @@ const TransporterDashboard: React.FC<TransporterDashboardProps> = ({ contract, a
 };
 
 export default TransporterDashboard;
-

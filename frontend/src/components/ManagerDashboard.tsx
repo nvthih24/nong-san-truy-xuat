@@ -8,13 +8,12 @@ interface ManagerDashboardProps {
 }
 
 const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ contract, account, connectWallet }) => {
-  const [productName, setProductName] = useState<string>('');
   const [productId, setProductId] = useState<string>('');
   const [receiveDate, setReceiveDate] = useState<string>('');
   const [price, setPrice] = useState<string>('');
 
   const updateManagerInfo = async () => {
-    if (!contract || !productName || !productId || !receiveDate || !price) {
+    if (!contract || !productId || !receiveDate || !price) {
       alert('Vui lòng điền đầy đủ thông tin!');
       return;
     }
@@ -30,20 +29,17 @@ const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ contract, account, 
         return;
       }
 
-      // Chuyển ngày nhận hàng thành timestamp (Unix seconds)
+      // Chuyển ngày thành timestamp
       const receiveTimestamp = Math.floor(new Date(receiveDate).getTime() / 1000);
 
-      // Gọi hàm updateManagerInfo với các tham số
+      // Gọi hàm updateManagerInfo
       const tx = await contract.updateManagerInfo(
         productId,
-        productName,
         receiveTimestamp,
         ethers.parseEther(price)
       );
       await tx.wait();
       alert('Cập nhật thông tin quản lý thành công!');
-      // Reset form
-      setProductName('');
       setProductId('');
       setReceiveDate('');
       setPrice('');
@@ -65,13 +61,6 @@ const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ contract, account, 
         <h3>Cập Nhật Thông Tin Quản Lý</h3>
         <input
           type="text"
-          placeholder="Tên sản phẩm"
-          value={productName}
-          onChange={(e) => setProductName(e.target.value)}
-          required
-        />
-        <input
-          type="text"
           placeholder="Mã sản phẩm"
           value={productId}
           onChange={(e) => setProductId(e.target.value)}
@@ -86,7 +75,7 @@ const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ contract, account, 
         />
         <input
           type="text"
-          placeholder="Giá cả"
+          placeholder="Giá cả (ETH)"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
           required
@@ -98,4 +87,3 @@ const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ contract, account, 
 };
 
 export default ManagerDashboard;
-
