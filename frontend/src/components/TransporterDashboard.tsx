@@ -67,7 +67,7 @@ const TransporterDashboard: React.FC<TransporterDashboardProps> = ({ contract, a
       );
 
 
-      alert('Cập nhật trace thành công!');
+      alert('Cập nhật vận chuyển thành công!');
       setTransporterName('');
       setProductId('');
       setReceiveDate('');
