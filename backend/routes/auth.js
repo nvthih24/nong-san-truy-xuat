@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
+const Transaction = require('../models/Transaction');
 
 const router = express.Router();
 
@@ -73,5 +74,29 @@ router.get('/users', auth, async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 });
+
+router.post('/transactions', auth, async (req, res) => {
+  const { txHash, productId, userAddress, action, timestamp } = req.body;
+
+  if (!txHash || !productId || !userAddress || !action || !timestamp) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  try {
+    const transaction = new Transaction({
+      txHash,
+      productId,
+      userAddress,
+      action,
+      timestamp,
+    });
+    await transaction.save();
+    res.status(201).json({ message: 'Transaction saved successfully', txHash });
+  } catch (error) {
+    console.error('Error saving transaction:', error);
+    res.status(500).json({ error: 'Failed to save transaction' });
+  }
+});
+
 
 module.exports = router;

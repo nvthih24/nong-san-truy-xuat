@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
+import axios from 'axios';
 
 interface FarmerDashboardProps {
   contract: ethers.Contract | null;
@@ -13,6 +14,7 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
   const [farmName, setFarmName] = useState<string>('');
   const [plantingDate, setPlantingDate] = useState<string>('');
   const [harvestDate, setHarvestDate] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const addProduct = async () => {
     if (!contract || !productName || !productId || !farmName || !plantingDate || !harvestDate) {
@@ -20,6 +22,7 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
       return;
     }
 
+    setIsLoading(true);
     try {
       // Kiểm tra role FARMER_ROLE
       const hasFarmerRole = await contract.hasRole(
@@ -31,11 +34,11 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
         return;
       }
 
-      // Chuyển ngày gieo trồng và ngày thu hoạch thành timestamp (Unix seconds)
+      // Chuyển ngày thành timestamp
       const plantingTimestamp = Math.floor(new Date(plantingDate).getTime() / 1000);
       const harvestTimestamp = Math.floor(new Date(harvestDate).getTime() / 1000);
 
-      // Gọi hàm addProduct với các tham số mới
+      // Gọi hàm addProduct
       const tx = await contract.addProduct(
         productName,
         productId,
@@ -43,17 +46,52 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
         plantingTimestamp,
         harvestTimestamp
       );
-      await tx.wait();
-      alert('Sản phẩm thêm thành công!');
-      // Reset form
+      const receipt = await tx.wait();
+      const txHash = receipt.hash;
+
+      // Lấy JWT token từ localStorage
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Vui lòng đăng nhập để lưu giao dịch!');
+        return;
+      }
+
+      // Gửi transaction hash tới backend
+      const response = await axios.post(
+        'http://localhost:5000/api/auth/transactions',
+        {
+          txHash,
+          productId,
+          userAddress: account,
+          action: 'addProduct',
+          timestamp: Math.floor(Date.now() / 1000),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            
+          },
+          
+        }
+      );
+      console.log('Giao dịch đã được lưu:', response.data);
+
+      alert(`Sản phẩm thêm thành công! Transaction Hash: ${txHash}`);
       setProductName('');
       setProductId('');
       setFarmName('');
       setPlantingDate('');
       setHarvestDate('');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Lỗi khi thêm sản phẩm:', error);
-      alert('Lỗi khi thêm sản phẩm!');
+      const errorMessage =
+        error.response?.data?.error || // Lỗi từ backend
+        error.reason || // Lỗi từ blockchain
+        error.message || // Lỗi chung
+        'Unknown error';
+      alert(`Lỗi khi thêm sản phẩm: ${errorMessage}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -73,6 +111,7 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
           value={productName}
           onChange={(e) => setProductName(e.target.value)}
           required
+          disabled={isLoading}
         />
         <input
           type="text"
@@ -80,6 +119,7 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
           value={productId}
           onChange={(e) => setProductId(e.target.value)}
           required
+          disabled={isLoading}
         />
         <input
           type="text"
@@ -87,6 +127,7 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
           value={farmName}
           onChange={(e) => setFarmName(e.target.value)}
           required
+          disabled={isLoading}
         />
         <input
           type="date"
@@ -94,6 +135,7 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
           value={plantingDate}
           onChange={(e) => setPlantingDate(e.target.value)}
           required
+          disabled={isLoading}
         />
         <input
           type="date"
@@ -101,9 +143,11 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
           value={harvestDate}
           onChange={(e) => setHarvestDate(e.target.value)}
           required
+          disabled={isLoading}
         />
-        
-        <button onClick={addProduct}>Thêm</button>
+        <button onClick={addProduct} disabled={isLoading}>
+          {isLoading ? 'Đang xử lý...' : 'Thêm'}
+        </button>
       </section>
     </div>
   );

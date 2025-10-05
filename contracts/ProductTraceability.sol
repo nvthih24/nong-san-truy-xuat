@@ -102,7 +102,7 @@ contract ProductTraceability is AccessControl {
     // Truy xuất nguồn gốc theo productId (công khai)
     function getTrace(string memory _productId) external view returns (TraceInfo memory) {
         require(bytes(productTraces[_productId].productId).length != 0, "Product not found");
-        return productTraces[_productId];
+        return productTraces[_productId];  
     }
 
     // Deactivate product (chỉ admin)
