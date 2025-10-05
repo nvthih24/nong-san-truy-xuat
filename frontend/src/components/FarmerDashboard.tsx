@@ -76,7 +76,7 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
       );
       console.log('Giao dịch đã được lưu:', response.data);
 
-      alert(`Sản phẩm thêm thành công! Transaction Hash: ${txHash}`);
+      alert(`Sản phẩm thêm thành công!`);
       setProductName('');
       setProductId('');
       setFarmName('');
