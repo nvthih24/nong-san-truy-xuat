@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
+import axios from 'axios';
 
 interface ManagerDashboardProps {
   contract: ethers.Contract | null;
@@ -38,7 +39,33 @@ const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ contract, account, 
         receiveTimestamp,
         ethers.parseEther(price)
       );
-      await tx.wait();
+      const receipt = await tx.wait();
+      const txHash = receipt.hash; // Lấy transaction hash
+
+            // Lấy JWT token từ localStorage
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Vui lòng đăng nhập để lưu giao dịch!');
+        return;
+      }
+
+      //Gửi transaction hash tới backend (có header Authorization)
+      await axios.post(
+        'http://localhost:5000/api/auth/transactions',
+        {
+          txHash,
+          productId,
+          userAddress: account,
+          action: 'updateManagerInfo',
+          timestamp: Math.floor(Date.now() / 1000),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // ✅ Quan trọng: gửi token đúng định dạng
+          },
+        }
+      );
+
       alert('Cập nhật thông tin quản lý thành công!');
       setProductId('');
       setReceiveDate('');

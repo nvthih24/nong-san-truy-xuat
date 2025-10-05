@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
+import axios from 'axios';
 
 interface TransporterDashboardProps {
   contract: ethers.Contract | null;
@@ -43,7 +44,29 @@ const TransporterDashboard: React.FC<TransporterDashboardProps> = ({ contract, a
         deliveryTimestamp,
         transportInfo
       );
-      await tx.wait();
+      const receipt = await tx.wait();
+      const txHash = receipt.hash; // Lấy transaction hash
+
+      // Lấy token từ localStorage
+      const token = localStorage.getItem('token');
+
+      await axios.post(
+        'http://localhost:5000/api/auth/transactions',
+        {
+          txHash,
+          productId,
+          userAddress: account,
+          action: 'updateTrace',
+          timestamp: Math.floor(Date.now() / 1000),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+
       alert('Cập nhật trace thành công!');
       setTransporterName('');
       setProductId('');
