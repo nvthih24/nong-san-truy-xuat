@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 interface FarmerDashboardProps {
   contract: ethers.Contract | null;
@@ -13,12 +14,25 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
   const [productId, setProductId] = useState<string>('');
   const [farmName, setFarmName] = useState<string>('');
   const [plantingDate, setPlantingDate] = useState<string>('');
+  const [plantingImage, setPlantingImage] = useState<File | null>(null);
   const [harvestDate, setHarvestDate] = useState<string>('');
+  const [harvestImage, setHarvestImage] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // Hàm upload ảnh lên Cloudinary và trả về URL
+  const handleImageUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await axios.post('http://localhost:5000/api/upload/image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.url;
+  };
+
+
   const addProduct = async () => {
-    if (!contract || !productName || !productId || !farmName || !plantingDate || !harvestDate) {
-      alert('Vui lòng điền đầy đủ thông tin!');
+    if (!contract || !productName || !productId || !farmName || !plantingDate || !harvestDate || !plantingImage || !harvestImage) {
+      toast.error('Vui lòng điền đầy đủ thông tin và chọn ảnh!');
       return;
     }
 
@@ -33,6 +47,9 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
         alert('Bạn không có quyền farmer!');
         return;
       }
+      // Upload ảnh lên Cloudinary
+      const plantingImageUrl = await handleImageUpload(plantingImage);
+      const harvestImageUrl = await handleImageUpload(harvestImage);
 
       // Chuyển ngày thành timestamp
       const plantingTimestamp = Math.floor(new Date(plantingDate).getTime() / 1000);
@@ -44,7 +61,9 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
         productId,
         farmName,
         plantingTimestamp,
-        harvestTimestamp
+        plantingImageUrl,
+        harvestTimestamp,
+        harvestImageUrl
       );
       const receipt = await tx.wait();
       const txHash = receipt.hash;
@@ -65,6 +84,8 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
           userAddress: account,
           action: 'addProduct',
           timestamp: Math.floor(Date.now() / 1000),
+          plantingImageUrl,
+          harvestImageUrl,
         },
         {
           headers: {
@@ -82,6 +103,8 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
       setFarmName('');
       setPlantingDate('');
       setHarvestDate('');
+      setPlantingImage(null);
+      setHarvestImage(null);
     } catch (error: any) {
       console.error('Lỗi khi thêm sản phẩm:', error);
       const errorMessage =
@@ -138,10 +161,24 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({ contract, account, co
           disabled={isLoading}
         />
         <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setPlantingImage(e.target.files?.[0] || null)}
+          required
+          disabled={isLoading}
+        />
+        <input
           type="date"
           placeholder="Ngày thu hoạch"
           value={harvestDate}
           onChange={(e) => setHarvestDate(e.target.value)}
+          required
+          disabled={isLoading}
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setHarvestImage(e.target.files?.[0] || null)}
           required
           disabled={isLoading}
         />

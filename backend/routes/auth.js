@@ -76,7 +76,11 @@ router.get('/users', auth, async (req, res) => {
 });
 
 router.post('/transactions', auth, async (req, res) => {
-  const { txHash, productId, userAddress, action, timestamp } = req.body;
+  const { txHash, productId, userAddress, action, timestamp,plantingImageUrl,
+    harvestImageUrl,
+    receiveImageUrl,
+    deliveryImageUrl,
+    managerReceiveImageUrl, } = req.body;
 
   if (!txHash || !productId || !userAddress || !action || !timestamp) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -89,6 +93,11 @@ router.post('/transactions', auth, async (req, res) => {
       userAddress,
       action,
       timestamp,
+      plantingImageUrl,
+      harvestImageUrl,
+      receiveImageUrl,
+      deliveryImageUrl,
+      managerReceiveImageUrl,
     });
     await transaction.save();
     res.status(201).json({ message: 'Transaction saved successfully', txHash });

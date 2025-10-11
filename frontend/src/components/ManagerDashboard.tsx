@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 interface ManagerDashboardProps {
   contract: ethers.Contract | null;
@@ -11,11 +12,23 @@ interface ManagerDashboardProps {
 const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ contract, account, connectWallet }) => {
   const [productId, setProductId] = useState<string>('');
   const [receiveDate, setReceiveDate] = useState<string>('');
+  const [receiveImage, setReceiveImage] = useState<File | null>(null);
   const [price, setPrice] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Hàm upload ảnh lên Cloudinary và trả về URL
+  const handleImageUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await axios.post('http://localhost:5000/api/upload/image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.url;
+  };
 
   const updateManagerInfo = async () => {
-    if (!contract || !productId || !receiveDate || !price) {
-      alert('Vui lòng điền đầy đủ thông tin!');
+    if (!contract || !productId || !receiveDate || !price || !receiveImage) {
+      toast.error('Vui lòng điền đầy đủ thông tin!');
       return;
     }
 
@@ -26,9 +39,11 @@ const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ contract, account, 
         account
       );
       if (!hasManagerRole) {
-        alert('Bạn không có quyền manager!');
+        toast.error('Bạn không có quyền manager!');
         return;
       }
+      // Upload ảnh lên Cloudinary
+      const managerReceiveImageUrl = await handleImageUpload(receiveImage);
 
       // Chuyển ngày thành timestamp
       const receiveTimestamp = Math.floor(new Date(receiveDate).getTime() / 1000);
@@ -37,6 +52,7 @@ const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ contract, account, 
       const tx = await contract.updateManagerInfo(
         productId,
         receiveTimestamp,
+        managerReceiveImageUrl,
         ethers.parseEther(price)
       );
       const receipt = await tx.wait();
@@ -58,21 +74,23 @@ const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ contract, account, 
           userAddress: account,
           action: 'updateManagerInfo',
           timestamp: Math.floor(Date.now() / 1000),
+          managerReceiveImageUrl,
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // ✅ Quan trọng: gửi token đúng định dạng
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
 
-      alert('Cập nhật thông tin quản lý thành công!');
+      toast('Cập nhật thông tin quản lý thành công!');
       setProductId('');
       setReceiveDate('');
       setPrice('');
+      setReceiveImage(null);
     } catch (error) {
       console.error('Lỗi khi cập nhật thông tin:', error);
-      alert('Lỗi khi cập nhật thông tin quản lý!');
+      toast.error('Lỗi khi cập nhật thông tin quản lý!');
     }
   };
 
@@ -99,6 +117,13 @@ const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ contract, account, 
           value={receiveDate}
           onChange={(e) => setReceiveDate(e.target.value)}
           required
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setReceiveImage(e.target.files?.[0] || null)}
+          required
+          disabled={isLoading}
         />
         <input
           type="text"

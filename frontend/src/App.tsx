@@ -24,7 +24,7 @@ declare global {
   }
 }
 
-const CONTRACT_ADDRESS = "0x48Ba82C9F6dA09614EB816bF476E5172179FA3Cb";
+const CONTRACT_ADDRESS = "0x3E3092bf6Ef5C54Ee5d01B18120c4789eDBbbDf8";
 
 const App: React.FC = () => {
   const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);

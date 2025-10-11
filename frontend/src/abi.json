@@ -48,6 +48,12 @@
         },
         {
           "indexed": false,
+          "internalType": "string",
+          "name": "managerReceiveImageUrl",
+          "type": "string"
+        },
+        {
+          "indexed": false,
           "internalType": "uint256",
           "name": "price",
           "type": "uint256"
@@ -85,9 +91,21 @@
         },
         {
           "indexed": false,
+          "internalType": "string",
+          "name": "plantingImageUrl",
+          "type": "string"
+        },
+        {
+          "indexed": false,
           "internalType": "uint256",
           "name": "harvestDate",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "harvestImageUrl",
+          "type": "string"
         }
       ],
       "name": "ProductAdded",
@@ -191,9 +209,21 @@
         },
         {
           "indexed": false,
+          "internalType": "string",
+          "name": "receiveImageUrl",
+          "type": "string"
+        },
+        {
+          "indexed": false,
           "internalType": "uint256",
           "name": "deliveryDate",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "deliveryImageUrl",
+          "type": "string"
         },
         {
           "indexed": false,
@@ -280,9 +310,19 @@
           "type": "uint256"
         },
         {
+          "internalType": "string",
+          "name": "_plantingImageUrl",
+          "type": "string"
+        },
+        {
           "internalType": "uint256",
           "name": "_harvestDate",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_harvestImageUrl",
+          "type": "string"
         }
       ],
       "name": "addProduct",
@@ -361,9 +401,19 @@
               "type": "uint256"
             },
             {
+              "internalType": "string",
+              "name": "plantingImageUrl",
+              "type": "string"
+            },
+            {
               "internalType": "uint256",
               "name": "harvestDate",
               "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "harvestImageUrl",
+              "type": "string"
             },
             {
               "internalType": "string",
@@ -376,9 +426,19 @@
               "type": "uint256"
             },
             {
+              "internalType": "string",
+              "name": "receiveImageUrl",
+              "type": "string"
+            },
+            {
               "internalType": "uint256",
               "name": "deliveryDate",
               "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "deliveryImageUrl",
+              "type": "string"
             },
             {
               "internalType": "string",
@@ -389,6 +449,11 @@
               "internalType": "uint256",
               "name": "managerReceiveDate",
               "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "managerReceiveImageUrl",
+              "type": "string"
             },
             {
               "internalType": "uint256",
@@ -514,9 +579,19 @@
           "type": "uint256"
         },
         {
+          "internalType": "string",
+          "name": "plantingImageUrl",
+          "type": "string"
+        },
+        {
           "internalType": "uint256",
           "name": "harvestDate",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "harvestImageUrl",
+          "type": "string"
         },
         {
           "internalType": "string",
@@ -529,9 +604,19 @@
           "type": "uint256"
         },
         {
+          "internalType": "string",
+          "name": "receiveImageUrl",
+          "type": "string"
+        },
+        {
           "internalType": "uint256",
           "name": "deliveryDate",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "deliveryImageUrl",
+          "type": "string"
         },
         {
           "internalType": "string",
@@ -542,6 +627,11 @@
           "internalType": "uint256",
           "name": "managerReceiveDate",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "managerReceiveImageUrl",
+          "type": "string"
         },
         {
           "internalType": "uint256",
@@ -625,6 +715,11 @@
           "type": "uint256"
         },
         {
+          "internalType": "string",
+          "name": "_managerReceiveImageUrl",
+          "type": "string"
+        },
+        {
           "internalType": "uint256",
           "name": "_price",
           "type": "uint256"
@@ -653,9 +748,19 @@
           "type": "uint256"
         },
         {
+          "internalType": "string",
+          "name": "_receiveImageUrl",
+          "type": "string"
+        },
+        {
           "internalType": "uint256",
           "name": "_deliveryDate",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_deliveryImageUrl",
+          "type": "string"
         },
         {
           "internalType": "string",

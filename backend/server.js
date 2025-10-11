@@ -3,12 +3,14 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const authRoutes = require('./routes/auth');
+const uploadRoutes = require('./routes/upload');
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use('/api/upload', uploadRoutes);
 
 mongoose.connect(process.env.MONGO_URI, { 
     useNewUrlParser: true, 
