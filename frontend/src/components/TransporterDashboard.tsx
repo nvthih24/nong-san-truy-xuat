@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 interface TransporterDashboardProps {
   contract: ethers.Contract | null;
@@ -12,12 +13,25 @@ const TransporterDashboard: React.FC<TransporterDashboardProps> = ({ contract, a
   const [transporterName, setTransporterName] = useState<string>('');
   const [productId, setProductId] = useState<string>('');
   const [receiveDate, setReceiveDate] = useState<string>('');
+  const [receiveImage, setReceiveImage] = useState<File | null>(null);
   const [deliveryDate, setDeliveryDate] = useState<string>('');
+  const [deliveryImage, setDeliveryImage] = useState<File | null>(null);
   const [transportInfo, setTransportInfo] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Hàm upload ảnh lên Cloudinary và trả về URL
+  const handleImageUpload = async (file: File) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await axios.post('http://localhost:5000/api/upload/image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.url;
+  };
 
   const updateTrace = async () => {
-    if (!contract || !transporterName || !productId || !receiveDate || !deliveryDate || !transportInfo) {
-      alert('Vui lòng điền đầy đủ thông tin!');
+    if (!contract || !transporterName || !productId || !receiveDate || !deliveryDate || !transportInfo || !receiveImage || !deliveryImage) {
+      toast.error('Vui lòng điền đầy đủ thông tin!');
       return;
     }
 
@@ -31,6 +45,9 @@ const TransporterDashboard: React.FC<TransporterDashboardProps> = ({ contract, a
         alert('Bạn không có quyền transporter!');
         return;
       }
+      // Upload ảnh lên Cloudinary
+      const receiveImageUrl = await handleImageUpload(receiveImage);
+      const deliveryImageUrl = await handleImageUpload(deliveryImage);
 
       // Chuyển ngày thành timestamp
       const receiveTimestamp = Math.floor(new Date(receiveDate).getTime() / 1000);
@@ -41,7 +58,9 @@ const TransporterDashboard: React.FC<TransporterDashboardProps> = ({ contract, a
         productId,
         transporterName,
         receiveTimestamp,
+        receiveImageUrl,
         deliveryTimestamp,
+        deliveryImageUrl,
         transportInfo
       );
       const receipt = await tx.wait();
@@ -58,6 +77,8 @@ const TransporterDashboard: React.FC<TransporterDashboardProps> = ({ contract, a
           userAddress: account,
           action: 'updateTrace',
           timestamp: Math.floor(Date.now() / 1000),
+          receiveImageUrl,
+          deliveryImageUrl,
         },
         {
           headers: {
@@ -66,16 +87,19 @@ const TransporterDashboard: React.FC<TransporterDashboardProps> = ({ contract, a
         }
       );
 
-
-      alert('Cập nhật vận chuyển thành công!');
+      toast('Cập nhật vận chuyển thành công!');
       setTransporterName('');
       setProductId('');
       setReceiveDate('');
       setDeliveryDate('');
       setTransportInfo('');
+      setReceiveImage(null);
+      setDeliveryImage(null);
     } catch (error) {
       console.error('Lỗi khi cập nhật trace:', error);
       alert('Lỗi khi cập nhật trace!');
+    }finally {
+      setIsLoading(false);
     }
   };
 
@@ -111,11 +135,25 @@ const TransporterDashboard: React.FC<TransporterDashboardProps> = ({ contract, a
           required
         />
         <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setReceiveImage(e.target.files?.[0] || null)}
+          required
+          disabled={isLoading}
+        />
+        <input
           type="date"
           placeholder="Ngày giao hàng thành công"
           value={deliveryDate}
           onChange={(e) => setDeliveryDate(e.target.value)}
           required
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setDeliveryImage(e.target.files?.[0] || null)}
+          required
+          disabled={isLoading}
         />
         <input
           type="text"
