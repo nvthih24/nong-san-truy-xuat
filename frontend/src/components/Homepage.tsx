@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
-import { QrReader } from 'react-qr-reader';
+import { Html5Qrcode } from 'html5-qrcode';
 import CONTRACT_ABI from '../abi.json';
 
 const CONTRACT_ADDRESS = '0x3E3092bf6Ef5C54Ee5d01B18120c4789eDBbbDf8';
@@ -33,6 +33,7 @@ const Homepage: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [scanError, setScanError] = useState<string>('');
+  const [scanner, setScanner] = useState<Html5Qrcode | null>(null);
 
   const fetchTrace = async (id: string = productId) => {
     if (!id) {
@@ -92,9 +93,50 @@ const Homepage: React.FC = () => {
   };
 
   const handleScanError = (err: any) => {
-    console.error('Lỗi khi quét QR:', err.name, err.message);
-    setScanError(`Lỗi: ${err.name} - ${err.message || 'Không thể truy cập camera. Vui lòng kiểm tra quyền hoặc thử lại!'}`);
+    console.error('Lỗi khi quét QR:', err);
+    setScanError(`Lỗi: ${err.name || 'Unknown'} - ${err.message || 'Không thể truy cập camera. Vui lòng kiểm tra quyền hoặc thử lại!'}`);
   };
+
+  const startScanner = () => {
+    const html5QrCode = new Html5Qrcode('qr-reader');
+    setScanner(html5QrCode);
+    html5QrCode
+      .start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText) => {
+          handleScan(decodedText);
+          html5QrCode.stop();
+          setIsScanning(false);
+        },
+        (error) => {
+          handleScanError(error);
+        }
+      )
+      .catch((err) => {
+        handleScanError(err);
+      });
+    setIsScanning(true);
+  };
+
+  const stopScanner = () => {
+    if (scanner) {
+      scanner.stop().then(() => {
+        setScanner(null);
+        setIsScanning(false);
+      }).catch((err) => {
+        handleScanError(err);
+      });
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (scanner) {
+        scanner.stop().catch((err) => console.error('Lỗi khi dừng scanner:', err));
+      }
+    };
+  }, [scanner]);
 
   return (
     <div style={{ textAlign: 'center', padding: '50px' }}>
@@ -112,41 +154,24 @@ const Homepage: React.FC = () => {
           Truy Xuất
         </button>
         <button
-          onClick={() => setIsScanning(!isScanning)}
+          onClick={isScanning ? stopScanner : startScanner}
           style={{ margin: '10px', padding: '10px 20px' }}
         >
           {isScanning ? 'Dừng Quét QR' : 'Quét QR'}
         </button>
-{isScanning && (
-  <div
-    style={{
-      width: '100%',
-      maxWidth: '400px',
-      height: '400px', // Chiều cao cố định để đảm bảo hiển thị
-      margin: '20px auto',
-      border: '2px solid #000', // Viền để dễ debug
-      overflow: 'hidden', // Ngăn tràn nội dung
-      position: 'relative', // Đảm bảo định vị đúng
-    }}
-  >
-    <QrReader
-      onResult={(result, error) => {
-        if (result) {
-          handleScan(result.getText());
-        }
-        if (error) {
-          handleScanError(error);
-        }
-      }}
-      constraints={{
-        facingMode: { ideal: 'environment' },
-        width: { ideal: 640 },
-        height: { ideal: 480 },
-      }}
-      // Xóa thuộc tính style khỏi QrReader
-    />
-  </div>
-)}
+<div
+  id="qr-reader"
+  style={{
+    width: '100%',
+    maxWidth: '400px',
+    height: isScanning ? '400px' : '0px',
+    margin: '20px auto',
+    border: isScanning ? '2px solid #000' : 'none',
+    overflow: 'hidden',
+    transition: 'height 0.3s ease',
+  }}
+></div>
+
         {scanError && <p style={{ color: 'red' }}>{scanError}</p>}
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {traceInfo && (
