@@ -1,0 +1,160 @@
+.dashboard-container {
+    max-width: 900px;
+    /* Giới hạn chiều rộng cho dashboard */
+    margin: 40px auto;
+    /* Căn giữa và tạo khoảng cách */
+    padding: 30px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+/* Phần Header (Tiêu đề + Nút ví) */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 20px;
+    margin-bottom: 25px;
+}
+
+.dashboard-header h2 {
+    margin: 0;
+    color: #1a202c;
+    font-size: 1.75rem;
+}
+
+/* Nút kết nối ví */
+.connect-wallet-btn {
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: 1px solid #22c55e;
+    /* Viền xanh */
+    background: #f0fdf4;
+    /* Nền xanh lá rất nhạt */
+    color: #16a34a;
+    /* Chữ xanh đậm */
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.connect-wallet-btn:hover {
+    background: #dcfce7;
+    transform: translateY(-1px);
+}
+
+/* Hiển thị địa chỉ ví */
+.wallet-status {
+    padding: 10px 18px;
+    background: #f1f5f9;
+    color: #475569;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: monospace;
+    /* Dùng font monospace cho địa chỉ ví */
+    font-weight: 600;
+}
+
+/* Form chính */
+.dashboard-form h3 {
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+    color: #334155;
+    font-weight: 600;
+}
+
+/* Lưới CSS cho các input */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* Chia 2 cột bằng nhau */
+    gap: 22px;
+    /* Khoảng cách giữa các ô */
+}
+
+/* Class để 1 ô chiếm trọn 2 cột */
+.form-span-2 {
+    grid-column: 1 / -1;
+    /* Kéo dài từ cột 1 đến hết */
+}
+
+/* Ghi đè style cho textarea từ .form-group */
+.form-group textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    font-size: 0.98rem;
+    outline: none;
+    transition: box-shadow 0.12s ease, border-color 0.12s ease;
+    font-family: inherit;
+    /* Giữ font chữ của trang */
+    min-height: 120px;
+    /* Chiều cao tối thiểu */
+    resize: vertical;
+    /* Chỉ cho phép kéo chiều dọc */
+}
+
+.form-group textarea:focus {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+/* Style cho khu vực upload file tùy chỉnh */
+.file-upload-zone {
+    position: relative;
+    border: 2px dashed #e2e8f0;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.file-upload-zone:hover {
+    border-color: #22c55e;
+    background-color: #f0fdf4;
+}
+
+/* Ẩn input file gốc */
+.file-upload-zone input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.file-upload-text {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.file-name {
+    color: #16a34a;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: block;
+    /* Xử lý tên file quá dài */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Style cho nút bấm chính */
+.dashboard-form .primary-btn {
+    margin-top: 30px;
+    width: auto;
+    /* Không để nút rộng 100% */
+    padding: 12px 28px;
+    /* Làm nút to hơn một chút */
+}

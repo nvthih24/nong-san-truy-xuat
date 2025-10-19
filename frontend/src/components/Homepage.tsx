@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ethers } from 'ethers';
-import { Html5Qrcode } from 'html5-qrcode';
 import CONTRACT_ABI from '../abi.json';
+import './Homepage.css';
+import Login from './Login';
+import Register from './Register';
+import { Html5Qrcode } from 'html5-qrcode';
 
-const CONTRACT_ADDRESS = '0x3E3092bf6Ef5C54Ee5d01B18120c4789eDBbbDf8';
+
+const CONTRACT_ADDRESS = '0xe68E71cc590D54bbD9F36fcC5A2354E310a3319A';
 
 interface TraceInfo {
   productName: string;
@@ -26,25 +30,42 @@ interface TraceInfo {
   isActive: boolean;
 }
 
-const Homepage: React.FC = () => {
+interface HomepageProps {
+  user?: any | null;
+  setUser?: (u: any | null) => void;
+  onLoginSuccess?: (data: { token: string; user: any }) => void;
+}
+
+const Homepage: React.FC<HomepageProps> = ({ user: parentUser, setUser, onLoginSuccess }) => {
   const navigate = useNavigate();
   const [productId, setProductId] = useState<string>('');
   const [traceInfo, setTraceInfo] = useState<TraceInfo | null>(null);
   const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [activeModal, setActiveModal] = useState<'none' | 'login' | 'register'>('none');
+  const [user, setUserState] = useState<any | null>(null); // thêm state user
+  const switchToLogin = () => setActiveModal('login');
+  const switchToRegister = () => setActiveModal('register');
+  const closeModal = () => setActiveModal('none');
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [scanError, setScanError] = useState<string>('');
   const [scanner, setScanner] = useState<Html5Qrcode | null>(null);
-
-  const fetchTrace = async (id: string = productId) => {
-    if (!id) {
+  const fetchTrace = async () => {
+    if (!productId.trim()) {
       setError('Vui lòng nhập mã sản phẩm!');
       return;
     }
 
+    setError('');
+    setTraceInfo(null);
+    setLoading(true);
+
     try {
       const provider = new ethers.JsonRpcProvider('https://rpc.zeroscan.org');
       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
-      const trace = await contract.getTrace(id);
+
+      const trace = await contract.getTrace(productId);
+
       const formattedTrace: TraceInfo = {
         productName: trace.productName,
         productId: trace.productId,
@@ -61,18 +82,20 @@ const Homepage: React.FC = () => {
         transportInfo: trace.transportInfo,
         managerReceiveDate: Number(trace.managerReceiveDate),
         managerReceiveImageUrl: trace.managerReceiveImageUrl,
-        price: Number(trace.price),
+        price: trace.price,
         isActive: trace.isActive,
       };
+
       setTraceInfo(formattedTrace);
-      setError('');
     } catch (err: any) {
       console.error('Lỗi khi truy xuất:', err);
-      setError(err.reason || 'Không tìm thấy thông tin sản phẩm hoặc mã sản phẩm không hợp lệ!');
-      setTraceInfo(null);
+      setError(
+        err.reason || 'Không tìm thấy thông tin sản phẩm hoặc mã sản phẩm không hợp lệ!'
+      );
+    } finally {
+      setLoading(false);
     }
   };
-
   const handleScan = (data: string | null) => {
     if (data) {
       try {
@@ -82,7 +105,7 @@ const Homepage: React.FC = () => {
           setProductId(productIdFromQR);
           setIsScanning(false);
           setScanError('');
-          fetchTrace(productIdFromQR);
+          fetchTrace();
         } else {
           setScanError('Mã QR không hợp lệ!');
         }
@@ -98,24 +121,8 @@ const Homepage: React.FC = () => {
   };
 
   const startScanner = () => {
-    const html5QrCode = new Html5Qrcode('qr-reader');
-    setScanner(html5QrCode);
-    html5QrCode
-      .start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-          handleScan(decodedText);
-          html5QrCode.stop();
-          setIsScanning(false);
-        },
-        (error) => {
-          handleScanError(error);
-        }
-      )
-      .catch((err) => {
-        handleScanError(err);
-      });
+    // Just set the state to true. The useEffect will handle the rest.
+    setScanError('');
     setIsScanning(true);
   };
 
@@ -131,133 +138,196 @@ const Homepage: React.FC = () => {
   };
 
   useEffect(() => {
+    if (isScanning) {
+      // This effect runs when isScanning becomes true
+      const html5QrCode = new Html5Qrcode('qr-reader');
+      setScanner(html5QrCode);
+
+      html5QrCode.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText) => {
+          // On successful scan
+          handleScan(decodedText);
+          html5QrCode.stop().then(() => {
+            setScanner(null);
+            setIsScanning(false);
+          }).catch((stopErr) => console.error('Stop scanner error', stopErr));
+        },
+        (errorMessage) => {
+          // This is a callback for non-fatal errors, not the main error handler
+          // We can ignore it or log it if needed, but don't set a visible error
+          // console.log(`QR Scanner non-fatal error: ${errorMessage}`);
+        }
+      ).catch((err) => {
+        // This catches the main error, e.g., camera permissions
+        handleScanError(err);
+        setIsScanning(false);
+      });
+    }
+
+    // Cleanup function
     return () => {
       if (scanner) {
         scanner.stop().catch((err) => console.error('Lỗi khi dừng scanner:', err));
       }
     };
-  }, [scanner]);
+  }, [isScanning]); // Rerun this effect when isScanning changes
 
   return (
-    <div style={{ textAlign: 'center', padding: '50px' }}>
-      <h1>Chào Mừng Đến Với Hệ Thống Truy Xuất Nguồn Gốc Nông Sản</h1>
-      <section>
-        <h3>Truy Xuất Nguồn Gốc</h3>
-        <input
-          type="text"
-          placeholder="Nhập mã sản phẩm (ví dụ: SP001)"
-          value={productId}
-          onChange={(e) => setProductId(e.target.value)}
-          style={{ padding: '10px', margin: '10px', width: '200px' }}
-        />
-        <button onClick={() => fetchTrace()} style={{ margin: '10px', padding: '10px 20px' }}>
-          Truy Xuất
-        </button>
-        <button
-          onClick={isScanning ? stopScanner : startScanner}
-          style={{ margin: '10px', padding: '10px 20px' }}
-        >
-          {isScanning ? 'Dừng Quét QR' : 'Quét QR'}
-        </button>
-<div
-  id="qr-reader"
-  style={{
-    width: '100%',
-    maxWidth: '400px',
-    height: isScanning ? '400px' : '0px',
-    margin: '20px auto',
-    border: isScanning ? '2px solid #000' : 'none',
-    overflow: 'hidden',
-    transition: 'height 0.3s ease',
-  }}
-></div>
+    <div className="homepage-container">
+      {/* HEADER */}
+      <header className="header">
+        <div className="logo">
+          <Link to="/">
+            <img src="/raumania.ico" alt="ThirtySix Logo" />
+            ThirtySix
+          </Link>
+        </div>
+        <nav className="nav">
+          <Link to="/about">Giới thiệu</Link>
+          <Link to="/contact">Liên hệ</Link>
+        </nav>
+        <div className="auth-actions">
+          <button className="btn-login" onClick={switchToLogin}>Đăng nhập</button>
+          <button className="btn-register" onClick={switchToRegister}>Đăng ký</button>
+        </div>
+      </header>
 
-        {scanError && <p style={{ color: 'red' }}>{scanError}</p>}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        {traceInfo && (
-          <div style={{ marginTop: '20px', textAlign: 'left', maxWidth: '600px', margin: '20px auto' }}>
-            <h4>Thông Tin Sản Phẩm</h4>
-            <p><strong>Tên sản phẩm:</strong> {traceInfo.productName || 'Chưa có'}</p>
-            <p><strong>Mã sản phẩm:</strong> {traceInfo.productId}</p>
-            <p><strong>Tên nông trại:</strong> {traceInfo.farmName || 'Chưa có'}</p>
-            <p>
-              <strong>Ngày gieo trồng:</strong>{' '}
-              {traceInfo.plantingDate ? new Date(traceInfo.plantingDate * 1000).toLocaleDateString() : 'Chưa có'}
-            </p>
-            {traceInfo.plantingImageUrl && (
-              <div>
-                <strong>Ảnh gieo trồng:</strong>
-                <br />
-                <img src={traceInfo.plantingImageUrl} alt="Planting" style={{ maxWidth: '100%', height: 'auto' }} />
-              </div>
-            )}
-            <p>
-              <strong>Ngày thu hoạch:</strong>{' '}
-              {traceInfo.harvestDate ? new Date(traceInfo.harvestDate * 1000).toLocaleDateString() : 'Chưa có'}
-            </p>
-            {traceInfo.harvestImageUrl && (
-              <div>
-                <strong>Ảnh thu hoạch:</strong>
-                <br />
-                <img src={traceInfo.harvestImageUrl} alt="Harvest" style={{ maxWidth: '100%', height: 'auto' }} />
-              </div>
-            )}
-            <p><strong>Tên đơn vị vận chuyển:</strong> {traceInfo.transporterName || 'Chưa có'}</p>
-            <p>
-              <strong>Ngày nhận hàng (vận chuyển):</strong>{' '}
-              {traceInfo.receiveDate ? new Date(traceInfo.receiveDate * 1000).toLocaleDateString() : 'Chưa có'}
-            </p>
-            {traceInfo.receiveImageUrl && (
-              <div>
-                <strong>Ảnh nhận hàng:</strong>
-                <br />
-                <img src={traceInfo.receiveImageUrl} alt="Receive" style={{ maxWidth: '100%', height: 'auto' }} />
-              </div>
-            )}
-            <p>
-              <strong>Ngày giao hàng:</strong>{' '}
-              {traceInfo.deliveryDate ? new Date(traceInfo.deliveryDate * 1000).toLocaleDateString() : 'Chưa có'}
-            </p>
-            {traceInfo.deliveryImageUrl && (
-              <div>
-                <strong>Ảnh giao hàng:</strong>
-                <br />
-                <img src={traceInfo.deliveryImageUrl} alt="Delivery" style={{ maxWidth: '100%', height: 'auto' }} />
-              </div>
-            )}
-            <p><strong>Thông tin vận chuyển:</strong> {traceInfo.transportInfo || 'Chưa có'}</p>
-            <p>
-              <strong>Ngày nhận hàng (quản lý):</strong>{' '}
-              {traceInfo.managerReceiveDate ? new Date(traceInfo.managerReceiveDate * 1000).toLocaleDateString() : 'Chưa có'}
-            </p>
-            {traceInfo.managerReceiveImageUrl && (
-              <div>
-                <strong>Ảnh nhận hàng (quản lý):</strong>
-                <br />
-                <img
-                  src={traceInfo.managerReceiveImageUrl}
-                  alt="Manager Receive"
-                  style={{ maxWidth: '100%', height: 'auto' }}
-                />
-              </div>
-            )}
-            <p>
-              <strong>Giá cả:</strong>{' '}
-              {traceInfo.price ? ethers.formatEther(traceInfo.price.toString()) + ' ETH' : 'Chưa có'}
-            </p>
-            <p><strong>Trạng thái:</strong> {traceInfo.isActive ? 'Hoạt động' : 'Không hoạt động'}</p>
+      {/* HERO SECTION */}
+      <section className="hero">
+        <div className="hero-content">
+          <h1>🌾 Truy xuất nguồn gốc nông sản Việt Nam</h1>
+          <p>Minh bạch hành trình sản phẩm — từ nông trại đến bàn ăn.</p>
+          <div className="search-box">
+            <input
+              type="text"
+              placeholder="Nhập mã sản phẩm..."
+              value={productId}
+              onChange={(e) => setProductId(e.target.value)}
+              disabled={isScanning}
+            />
+            <button onClick={fetchTrace} disabled={isScanning}>Truy xuất</button>
           </div>
-        )}
+
+          <div className="hero-divider">hoặc</div>
+
+          <button
+            className={`qr-toggle-btn ${isScanning ? 'scanning' : ''}`}
+            onClick={isScanning ? stopScanner : startScanner}
+          >
+            {isScanning ? 'Dừng Quét' : 'Quét Mã QR'}
+          </button>
+
+          {loading && <div className="loader"></div>}
+          {error && <p className="error">{error}</p>}
+
+          {/* Khung máy quét sẽ xuất hiện ở đây */}
+          {isScanning && <div id="qr-reader"></div>}
+
+          {scanError && <p className="error">{scanError}</p>}
+        </div>
       </section>
-      <section>
-        <p>Vui lòng chọn một hành động:</p>
-        <button onClick={() => navigate('/login')} style={{ margin: '10px', padding: '10px 20px' }}>
-          Đăng Nhập
-        </button>
-        <button onClick={() => navigate('/register')} style={{ margin: '10px', padding: '10px 20px' }}>
-          Đăng Ký
-        </button>
-      </section>
+
+      {/* RESULT SECTION */}
+      {traceInfo && (
+        <section className="result-section">
+          <h3>📋 Thông Tin Sản Phẩm</h3>
+          <ul className="info-list">
+            {[
+              ['Tên sản phẩm', traceInfo.productName],
+              ['Mã sản phẩm', traceInfo.productId],
+              ['Nông trại', traceInfo.farmName],
+              ['Ngày gieo trồng', new Date(traceInfo.plantingDate * 1000).toLocaleDateString()],
+              ['Ngày thu hoạch', traceInfo.harvestDate ? new Date(traceInfo.harvestDate * 1000).toLocaleDateString() : 'Chưa có'],
+              ['Đơn vị vận chuyển', traceInfo.transporterName || 'Chưa có'],
+              ['Thông tin vận chuyển', traceInfo.transportInfo || 'Chưa có'],
+              ['Giá cả', traceInfo.price ? Number(ethers.formatEther(traceInfo.price)).toFixed(0) + ' Dong' : 'Chưa có'],
+              ['Trạng thái', traceInfo.isActive ? 'Hoạt động' : 'Không hoạt động'],
+            ].map(([label, value]) => (
+              <li key={label}><strong>{label}:</strong> {value}</li>
+            ))}
+          </ul>
+
+          <h3>🚚 Hành Trình Sản Phẩm</h3>
+          <div className="trace-gallery">
+            {[
+              {
+                img: traceInfo.plantingImageUrl,
+                title: "🌱 Gieo trồng",
+                date: traceInfo.plantingDate,
+                desc: traceInfo.farmName,
+              },
+              {
+                img: traceInfo.harvestImageUrl,
+                title: "🌾 Thu hoạch",
+                date: traceInfo.harvestDate,
+              },
+              {
+                img: traceInfo.receiveImageUrl,
+                title: "🚚 Vận chuyển",
+                date: traceInfo.receiveDate,
+                desc: traceInfo.transporterName,
+              },
+              {
+                img: traceInfo.deliveryImageUrl,
+                title: "📦 Giao hàng",
+                date: traceInfo.deliveryDate,
+              },
+              {
+                img: traceInfo.managerReceiveImageUrl,
+                title: "🧾 Quản lý nhận",
+                date: traceInfo.managerReceiveDate,
+              },
+            ]
+              .filter((step) => step.img)
+              .map((step, index) => (
+                <div className="trace-card" key={index}>
+                  <img
+                    src={step.img || '/fallback.jpg'}
+                    alt={step.title}
+                    loading="lazy"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://via.placeholder.com/300x200?text=No+Image+Available';
+                    }}
+                  />
+                  <h4>{step.title}</h4>
+                  {step.desc && <p>{step.desc}</p>}
+                  <span>{new Date(step.date * 1000).toLocaleDateString()}</span>
+                </div>
+              ))}
+          </div>
+
+        </section>
+      )}
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <p>© 2025 ThirtySix — Hệ thống truy xuất nguồn gốc nông sản Việt Nam</p>
+      </footer>
+
+      {activeModal !== 'none' && (
+        // Lớp nền mờ
+        <div className="modal-overlay" onClick={closeModal}>
+          {activeModal === 'login' && (
+            <Login
+              onClose={closeModal}
+              switchToRegister={switchToRegister}
+              setUser={setUser}
+              onLoginSuccess={(data) => {
+                onLoginSuccess?.(data);
+                closeModal();
+              }}
+            />
+          )}
+          {activeModal === 'register' && (
+            <Register
+              onClose={closeModal}
+              switchToLogin={switchToLogin} // Truyền hàm chuyển đổi
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 };

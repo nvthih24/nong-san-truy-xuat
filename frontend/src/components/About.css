@@ -1,0 +1,130 @@
+.about-content {
+  max-width: 1100px;
+  margin: 60px auto;
+  padding: 20px 40px;
+  animation: fadeIn 1s ease;
+  color: #333;
+}
+
+.about-hero {
+  background: linear-gradient(rgba(21, 128, 61, 0.6), rgba(21, 128, 61, 0.6)),
+    url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80");
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 80px 20px;
+  border-radius: 16px;
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.about-hero-text h1 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.about-hero-text p {
+  font-size: 1.1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.highlight {
+  color: #bbf7d0;
+  font-weight: 600;
+}
+
+.about-mission {
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+.mission-grid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.mission-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 25px;
+  width: 300px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.mission-card:hover {
+  transform: translateY(-6px);
+}
+
+.about-values {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 40px;
+  margin: 80px 0;
+}
+
+.values-text {
+  flex: 1;
+  min-width: 320px;
+}
+
+.values-text h2 {
+  font-size: 1.8rem;
+  color: #15803d;
+  margin-bottom: 20px;
+}
+
+.values-text ul {
+  list-style: none;
+  padding: 0;
+}
+
+.values-text li {
+  margin-bottom: 15px;
+  font-size: 1.05rem;
+  color: #333;
+  line-height: 1.6;
+}
+
+.values-text li strong {
+  color: #166534;
+}
+
+.values-image {
+  flex: 1;
+  min-width: 300px;
+  text-align: center;
+}
+
+.values-image img {
+  width: 100%;
+  max-width: 450px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.4s ease;
+}
+
+.values-image img:hover {
+  transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .about-values {
+    flex-direction: column-reverse;
+    text-align: center;
+  }
+
+  .values-text ul {
+    text-align: left;
+  }
+
+  .values-image img {
+    max-width: 90%;
+  }
+}

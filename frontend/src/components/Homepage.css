@@ -1,0 +1,552 @@
+/* --- Global Layout --- */
+.homepage-container {
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+/* --- Header --- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 60px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #15803d;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.logo img {
+  vertical-align: middle;
+  margin-right: 10px;
+  height: 70px;
+  width: auto;
+  display: inline-block;
+}
+
+.logo a {
+  text-decoration: none;
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.nav a {
+  margin: 0 15px;
+  color: #444;
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+}
+
+.nav a::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  left: 0;
+  bottom: -4px;
+  background: #22c55e;
+  transition: width 0.3s ease;
+}
+
+.nav a:hover::after {
+  width: 100%;
+}
+
+/* nút xác thực */
+.auth-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* unified button base to match modal card style */
+.auth-actions .btn-login,
+.auth-actions .btn-register {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 8px 22px rgba(2, 6, 23, 0.08);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease, color 0.12s ease;
+  min-height: 40px;
+  line-height: 1;
+  text-decoration: none;
+}
+
+/* login: subtle outline / light background */
+.auth-actions .btn-login {
+  background: rgba(255, 255, 255, 0.9);
+  color: #166534;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+/* register: primary */
+.auth-actions .btn-register {
+  background: #22c55e;
+  color: #071010;
+  box-shadow: 0 10px 26px rgba(34, 197, 94, 0.14);
+}
+
+/* hover states */
+.auth-actions .btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(2, 6, 23, 0.10);
+  background: #ffffff;
+}
+
+.auth-actions .btn-register:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(34, 197, 94, 0.18);
+  filter: brightness(0.98);
+}
+
+/* focus / keyboard */
+.auth-actions .btn-login:focus,
+.auth-actions .btn-register:focus {
+  outline: 3px solid rgba(34, 197, 94, 0.12);
+  outline-offset: 2px;
+}
+
+/* preserve small-screen layout */
+@media (max-width: 480px) {
+
+  .auth-actions .btn-login,
+  .auth-actions .btn-register {
+    padding: 8px 10px;
+    min-height: 36px;
+    border-radius: 8px;
+  }
+}
+
+/* --- Hero Section --- */
+.hero {
+  height: 85vh;
+  background: linear-gradient(rgba(21, 128, 61, 0.45), rgba(21, 128, 61, 0.55)),
+    url("https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1600&q=80");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.hero-content {
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.45);
+  padding: 40px 60px;
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  max-width: 600px;
+  animation: fadeIn 1.5s ease forwards;
+}
+
+.hero h1 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+  opacity: 0.9;
+}
+
+.search-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.search-box input {
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  width: 260px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.search-box button {
+  background: #22c55e;
+  color: white;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.search-box button:hover {
+  background: #15803d;
+  transform: scale(1.05);
+}
+
+/* Vạch chia "hoặc" */
+.hero-divider {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 20px 0 15px 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 1.5s ease forwards;
+}
+
+.hero-divider::before,
+.hero-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 0 15px;
+}
+
+/* Nút bật/tắt Quét QR */
+.qr-toggle-btn {
+  padding: 12px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.3s ease, transform 0.2s ease, border-color 0.3s ease;
+
+  /* Kiểu "outline" (viền) */
+  background: transparent;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.qr-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+/* Kiểu nút khi đang quét (Dừng Quét) */
+.qr-toggle-btn.scanning {
+  background: #ef4444;
+  /* Màu đỏ */
+  border-color: #ef4444;
+  color: white;
+}
+
+.qr-toggle-btn.scanning:hover {
+  background: #dc2626;
+  /* Màu đỏ đậm hơn */
+  transform: scale(1.05);
+}
+
+/* --- Khung chứa máy quét QR (Quan trọng nhất) --- */
+#qr-reader {
+  width: 280px;
+  /* Kích thước khung quét */
+  height: 280px;
+  margin: 25px auto 0;
+  /* Tự động căn giữa và tạo khoảng cách trên */
+  border-radius: 16px;
+  /* Bo góc cho đẹp */
+  overflow: hidden;
+  /* Quan trọng: Bắt buộc video phải bo theo góc */
+  border: 4px solid rgba(255, 255, 255, 0.7);
+  background: #333;
+  /* Nền mờ trong khi camera tải */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.5s ease;
+  /* Tái sử dụng animation fadeIn */
+}
+
+/* Đảm bảo video bên trong vừa vặn 100% */
+#qr-reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  /* Đảm bảo video lấp đầy khung */
+}
+
+/* --- Loader --- */
+.loader {
+  margin: 20px auto;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #22c55e;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Error --- */
+.error {
+  margin-top: 10px;
+  color: #ffb3b3;
+  font-weight: bold;
+}
+
+/* --- Result Section --- */
+.result-section {
+  margin: 60px auto;
+  padding: 50px 40px;
+  max-width: 1200px;
+  text-align: center;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  animation: fadeIn 0.8s ease;
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.result-section h3 {
+  color: #15803d;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.result-section h3::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 3px;
+  background: #22c55e;
+  margin: 10px auto 0;
+  border-radius: 3px;
+}
+
+.result-section ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 40px;
+}
+
+.result-section li {
+  margin-bottom: 12px;
+  line-height: 1.7;
+  text-align: left;
+  padding-left: 18%;
+  padding-right: 18%;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.result-section li strong {
+  color: #166534;
+}
+
+.result-section li:hover {
+  color: #166534;
+}
+
+/* --- Trace Timeline / Gallery --- */
+.trace-gallery {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 35px;
+  position: relative;
+  margin-top: 40px;
+  padding: 20px;
+}
+
+.trace-gallery::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 4px;
+  background: linear-gradient(90deg, #22c55e, #86efac);
+  z-index: 0;
+  opacity: 0.25;
+  border-radius: 3px;
+}
+
+/* --- Card --- */
+.trace-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+  width: 230px;
+  padding: 18px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  animation: fadeUp 0.8s ease both;
+}
+
+.trace-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.trace-card img {
+  width: 100%;
+  height: 150px;
+  border-radius: 12px;
+  object-fit: cover;
+  margin-bottom: 12px;
+  transition: transform 0.4s ease;
+}
+
+.trace-card:hover img {
+  transform: scale(1.05);
+}
+
+.trace-card h4 {
+  font-size: 1.1rem;
+  color: #166534;
+  margin: 10px 0 5px;
+}
+
+.trace-card p {
+  font-size: 0.92rem;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+.trace-card span {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+/* --- Animations --- */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Footer --- */
+.footer {
+  margin-top: auto;
+  padding: 20px;
+  background: #f8fafc;
+  color: #555;
+  text-align: center;
+  border-top: 1px solid #e0e0e0;
+  font-size: 0.9rem;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .hero {
+    padding: 80px 10px;
+    height: auto;
+  }
+
+  .hero-content {
+    width: 95%;
+    padding: 30px 15px;
+  }
+
+  .result-section li {
+    padding: 0;
+    text-align: left;
+  }
+
+  .trace-gallery {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .trace-gallery::before {
+    display: none;
+  }
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  /* mờ nền phía sau */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 20px;
+  /* space around modal on small screens */
+}
+
+/* make modal wrapper transparent so only the internal card is visible */
+.modal-content {
+  background: transparent;
+  /* <-- remove the big white panel */
+  padding: 0;
+  /* keep no extra padding so card controls its size */
+  border-radius: 0;
+  box-shadow: none;
+  max-width: none;
+  width: auto;
+}
+
+/* if you have a modal-close class here, you can keep it or remove — card has its own close */
+.modal-close {
+  display: none;
+}
+
+/* nhỏ hơn di động */
+@media (max-width: 480px) {
+  .modal-content {
+    max-width: 96%;
+    padding: 12px;
+    border-radius: 10px;
+  }
+}

@@ -1,10 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const QRCode = require('qrcode');
-const mongoose = require('mongoose');
-const { v2: cloudinary } = require('cloudinary');
-const authMiddleware = require('../middleware/auth'); // Middleware kiểm tra JWT token
-const QRCodeModel = require('../models/qrcodes');
+const QRCode = require("qrcode");
+const mongoose = require("mongoose");
+const { v2: cloudinary } = require("cloudinary");
+const authMiddleware = require("../middleware/auth"); // Middleware kiểm tra JWT token
+const QRCodeModel = require("../models/qrcodes");
 
 // Cấu hình Cloudinary (nếu dùng)
 cloudinary.config({
@@ -14,7 +14,7 @@ cloudinary.config({
 });
 
 // Endpoint: Tạo mã QR
-router.post('/', authMiddleware, async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   const { productId, qrContent } = req.body;
   const createdBy = req.user.address; // Lấy từ JWT token (địa chỉ ví admin)
 
@@ -24,7 +24,7 @@ router.post('/', authMiddleware, async (req, res) => {
 
     // Upload lên Cloudinary (nếu dùng)
     const uploadResult = await cloudinary.uploader.upload(qrImageUrl, {
-      folder: 'qrcodes',
+      folder: "qrcodes",
     });
 
     // Lưu vào database
@@ -36,49 +36,51 @@ router.post('/', authMiddleware, async (req, res) => {
     });
 
     await qrCode.save();
-    res.status(201).json({ message: 'Tạo mã QR thành công', qrCode });
+    res.status(201).json({ message: "Tạo mã QR thành công", qrCode });
   } catch (error) {
-    console.error('Lỗi khi tạo mã QR:', error);
-    res.status(500).json({ message: 'Lỗi server' });
+    console.error("Lỗi khi tạo mã QR:", error);
+    res.status(500).json({ message: "Lỗi server" });
   }
 });
 
 // Endpoint: Lấy tất cả mã QR
-router.get('/', authMiddleware, async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const qrCodes = await QRCodeModel.find();
     res.status(200).json(qrCodes);
   } catch (error) {
-    console.error('Lỗi khi lấy danh sách mã QR:', error);
-    res.status(500).json({ message: 'Lỗi server' });
+    console.error("Lỗi khi lấy danh sách mã QR:", error);
+    res.status(500).json({ message: "Lỗi server" });
   }
 });
 
 // Endpoint: Lấy mã QR theo productId
-router.get('/product/:productId', authMiddleware, async (req, res) => {
+router.get("/product/:productId", authMiddleware, async (req, res) => {
   try {
-    const qrCode = await QRCodeModel.findOne({ productId: req.params.productId });
+    const qrCode = await QRCodeModel.findOne({
+      productId: req.params.productId,
+    });
     if (!qrCode) {
-      return res.status(404).json({ message: 'Không tìm thấy mã QR' });
+      return res.status(404).json({ message: "Không tìm thấy mã QR" });
     }
     res.status(200).json(qrCode);
   } catch (error) {
-    console.error('Lỗi khi lấy mã QR:', error);
-    res.status(500).json({ message: 'Lỗi server' });
+    console.error("Lỗi khi lấy mã QR:", error);
+    res.status(500).json({ message: "Lỗi server" });
   }
 });
 
 // Endpoint: Xóa mã QR
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete("/:id", authMiddleware, async (req, res) => {
   try {
     const qrCode = await QRCodeModel.findByIdAndDelete(req.params.id);
     if (!qrCode) {
-      return res.status(404).json({ message: 'Không tìm thấy mã QR' });
+      return res.status(404).json({ message: "Không tìm thấy mã QR" });
     }
-    res.status(200).json({ message: 'Xóa mã QR thành công' });
+    res.status(200).json({ message: "Xóa mã QR thành công" });
   } catch (error) {
-    console.error('Lỗi khi xóa mã QR:', error);
-    res.status(500).json({ message: 'Lỗi server' });
+    console.error("Lỗi khi xóa mã QR:", error);
+    res.status(500).json({ message: "Lỗi server" });
   }
 });
 
