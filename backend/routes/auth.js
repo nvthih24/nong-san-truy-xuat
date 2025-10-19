@@ -62,8 +62,9 @@ router.get('/me', require('../middleware/auth'), async (req, res) => {
 
 
 
-// get all users (admin only)
+// get all users (chi admin xem)
 router.get('/users', auth, async (req, res) => {
+  console.log('User info:', req.user);
   if (req.user.role !== 'admin') {
     return res.status(403).json({ msg: 'Access denied' });
   }
@@ -106,6 +107,27 @@ router.post('/transactions', auth, async (req, res) => {
     res.status(500).json({ error: 'Failed to save transaction' });
   }
 });
+
+// Lấy tất cả transaction (chỉ admin xem)
+router.get('/transactions', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ msg: 'Access denied' });
+    }
+
+    const transactions = await Transaction.find();
+    res.json(transactions);
+  } catch (error) {
+    console.error('Error fetching transactions:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.get('/traces-count', async (req, res) => {
+   const count = await Trace.countDocuments();
+   res.json({ count });
+});
+
 
 
 module.exports = router;
