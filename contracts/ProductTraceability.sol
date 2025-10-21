@@ -26,9 +26,13 @@ contract ProductTraceability is AccessControl {
         string managerReceiveImageUrl; // URL ảnh ngày nhận hàng (manager)
         uint256 price;              // Giá cả
         bool isActive;              // Trạng thái
+        address farmer;             // Địa chỉ farmer đã thêm sản phẩm
+        address transporter;        // Địa chỉ transporter đã cập nhật
     }
 
-    mapping(string => TraceInfo) public productTraces; // productId (string) -> TraceInfo
+    mapping(string => TraceInfo) public productTraces; // productId -> TraceInfo
+    mapping(address => string[]) public farmerProducts; // farmer address -> danh sách productId
+    mapping(address => string[]) public transporterProducts; // transporter address -> danh sách productId
     mapping(uint256 => string) public indexToProductId; // index -> productId
     uint256 public nextProductId = 1; // Auto-increment index
 
@@ -39,16 +43,31 @@ contract ProductTraceability is AccessControl {
         uint256 plantingDate,
         string plantingImageUrl,
         uint256 harvestDate,
+        string harvestImageUrl,
+        address indexed farmer
+    );
+    event ProductUpdated(
+        string indexed productId,
+        string productName,
+        string farmName,
+        uint256 harvestDate,
         string harvestImageUrl
     );
-    event TraceUpdated(
+    event ReceiveUpdated(
         string indexed productId,
         string transporterName,
         uint256 receiveDate,
         string receiveImageUrl,
+        string transportInfo,
+        address indexed transporter
+    );
+    event DeliveryUpdated(
+        string indexed productId,
+        string transporterName,
         uint256 deliveryDate,
         string deliveryImageUrl,
-        string transportInfo
+        string transportInfo,
+        address indexed transporter
     );
     event ManagerInfoUpdated(
         string indexed productId,
@@ -92,34 +111,75 @@ contract ProductTraceability is AccessControl {
             managerReceiveDate: 0,
             managerReceiveImageUrl: "",
             price: 0,
-            isActive: true
+            isActive: true,
+            farmer: msg.sender,
+            transporter: address(0)
         });
+        farmerProducts[msg.sender].push(_productId);
         indexToProductId[nextProductId] = _productId;
         nextProductId++;
-        emit ProductAdded(_productId, _productName, _farmName, _plantingDate, _plantingImageUrl, _harvestDate, _harvestImageUrl);
+        emit ProductAdded(_productId, _productName, _farmName, _plantingDate, _plantingImageUrl, _harvestDate, _harvestImageUrl, msg.sender);
         return _productId;
     }
 
-    // Cập nhật thông tin vận chuyển (chỉ transporter)
-    function updateTrace(
+    // Cập nhật thông tin thu hoạch (chỉ farmer)
+    function updateProduct(
+        string memory _productId,
+        string memory _productName,
+        string memory _farmName,
+        uint256 _harvestDate,
+        string memory _harvestImageUrl
+    ) external onlyRole(FARMER_ROLE) {
+        require(bytes(productTraces[_productId].productId).length != 0, "Product not found");
+        require(productTraces[_productId].isActive, "Product not active");
+        require(productTraces[_productId].farmer == msg.sender, "Only the farmer who added the product can update it");
+        TraceInfo storage trace = productTraces[_productId];
+        trace.productName = _productName;
+        trace.farmName = _farmName;
+        trace.harvestDate = _harvestDate;
+        trace.harvestImageUrl = _harvestImageUrl;
+        emit ProductUpdated(_productId, _productName, _farmName, _harvestDate, _harvestImageUrl);
+    }
+
+    // Cập nhật thông tin nhận hàng (chỉ transporter)
+    function updateReceive(
         string memory _productId,
         string memory _transporterName,
         uint256 _receiveDate,
         string memory _receiveImageUrl,
+        string memory _transportInfo
+    ) external onlyRole(TRANSPORTER_ROLE) {
+        require(bytes(productTraces[_productId].productId).length != 0, "Product not found");
+        require(productTraces[_productId].isActive, "Product not active");
+        require(productTraces[_productId].receiveDate == 0, "Receive info already updated");
+        TraceInfo storage trace = productTraces[_productId];
+        trace.transporterName = _transporterName;
+        trace.receiveDate = _receiveDate;
+        trace.receiveImageUrl = _receiveImageUrl;
+        trace.transportInfo = _transportInfo;
+        trace.transporter = msg.sender;
+        transporterProducts[msg.sender].push(_productId);
+        emit ReceiveUpdated(_productId, _transporterName, _receiveDate, _receiveImageUrl, _transportInfo, msg.sender);
+    }
+
+    // Cập nhật thông tin giao hàng (chỉ transporter)
+    function updateDelivery(
+        string memory _productId,
+        string memory _transporterName,
         uint256 _deliveryDate,
         string memory _deliveryImageUrl,
         string memory _transportInfo
     ) external onlyRole(TRANSPORTER_ROLE) {
         require(bytes(productTraces[_productId].productId).length != 0, "Product not found");
         require(productTraces[_productId].isActive, "Product not active");
+        require(productTraces[_productId].receiveDate != 0, "Must update receive info first");
+        require(productTraces[_productId].transporter == msg.sender, "Only the transporter who updated receive info can update delivery");
         TraceInfo storage trace = productTraces[_productId];
         trace.transporterName = _transporterName;
-        trace.receiveDate = _receiveDate;
-        trace.receiveImageUrl = _receiveImageUrl;
         trace.deliveryDate = _deliveryDate;
         trace.deliveryImageUrl = _deliveryImageUrl;
         trace.transportInfo = _transportInfo;
-        emit TraceUpdated(_productId, _transporterName, _receiveDate, _receiveImageUrl, _deliveryDate, _deliveryImageUrl, _transportInfo);
+        emit DeliveryUpdated(_productId, _transporterName, _deliveryDate, _deliveryImageUrl, _transportInfo, msg.sender);
     }
 
     // Cập nhật thông tin quản lý (chỉ manager)
@@ -136,6 +196,26 @@ contract ProductTraceability is AccessControl {
         trace.managerReceiveImageUrl = _managerReceiveImageUrl;
         trace.price = _price;
         emit ManagerInfoUpdated(_productId, _managerReceiveDate, _managerReceiveImageUrl, _price);
+    }
+
+    // Lấy danh sách sản phẩm của farmer
+    function getProductsByFarmer(address farmer) external view returns (TraceInfo[] memory) {
+        string[] memory productIds = farmerProducts[farmer];
+        TraceInfo[] memory result = new TraceInfo[](productIds.length);
+        for (uint256 i = 0; i < productIds.length; i++) {
+            result[i] = productTraces[productIds[i]];
+        }
+        return result;
+    }
+
+    // Lấy danh sách sản phẩm của transporter
+    function getProductsByTransporter(address transporter) external view returns (TraceInfo[] memory) {
+        string[] memory productIds = transporterProducts[transporter];
+        TraceInfo[] memory result = new TraceInfo[](productIds.length);
+        for (uint256 i = 0; i < productIds.length; i++) {
+            result[i] = productTraces[productIds[i]];
+        }
+        return result;
     }
 
     // Truy xuất nguồn gốc theo productId (công khai)

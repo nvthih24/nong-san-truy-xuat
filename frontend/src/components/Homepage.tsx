@@ -8,7 +8,7 @@ import Register from './Register';
 import { Html5Qrcode } from 'html5-qrcode';
 
 
-const CONTRACT_ADDRESS = '0xe68E71cc590D54bbD9F36fcC5A2354E310a3319A';
+const CONTRACT_ADDRESS = '0xBa59809d7a2490959145989975D57dE504A38141';
 
 interface TraceInfo {
   productName: string;

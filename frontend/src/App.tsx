@@ -26,7 +26,7 @@ declare global {
   }
 }
 
-const CONTRACT_ADDRESS = "0xe68E71cc590D54bbD9F36fcC5A2354E310a3319A";
+const CONTRACT_ADDRESS = "0xBa59809d7a2490959145989975D57dE504A38141";
 
 // Component chứa toàn bộ logic ứng dụng, nằm bên trong Router
 const AppContent: React.FC = () => {

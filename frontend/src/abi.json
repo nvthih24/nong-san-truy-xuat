@@ -42,6 +42,49 @@
         },
         {
           "indexed": false,
+          "internalType": "string",
+          "name": "transporterName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "deliveryDate",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "deliveryImageUrl",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "transportInfo",
+          "type": "string"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "transporter",
+          "type": "address"
+        }
+      ],
+      "name": "DeliveryUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "string",
+          "name": "productId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
           "internalType": "uint256",
           "name": "managerReceiveDate",
           "type": "uint256"
@@ -106,9 +149,95 @@
           "internalType": "string",
           "name": "harvestImageUrl",
           "type": "string"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "farmer",
+          "type": "address"
         }
       ],
       "name": "ProductAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "string",
+          "name": "productId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "productName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "farmName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "harvestDate",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "harvestImageUrl",
+          "type": "string"
+        }
+      ],
+      "name": "ProductUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "string",
+          "name": "productId",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "transporterName",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "receiveDate",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "receiveImageUrl",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "transportInfo",
+          "type": "string"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "transporter",
+          "type": "address"
+        }
+      ],
+      "name": "ReceiveUpdated",
       "type": "event"
     },
     {
@@ -184,55 +313,6 @@
         }
       ],
       "name": "RoleRevoked",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "string",
-          "name": "productId",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "transporterName",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "receiveDate",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "receiveImageUrl",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "deliveryDate",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "deliveryImageUrl",
-          "type": "string"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "transportInfo",
-          "type": "string"
-        }
-      ],
-      "name": "TraceUpdated",
       "type": "event"
     },
     {
@@ -352,6 +432,262 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "farmerProducts",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "farmer",
+          "type": "address"
+        }
+      ],
+      "name": "getProductsByFarmer",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "productName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "productId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "farmName",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "plantingDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "plantingImageUrl",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "harvestDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "harvestImageUrl",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "transporterName",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "receiveDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "receiveImageUrl",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deliveryDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "deliveryImageUrl",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "transportInfo",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "managerReceiveDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "managerReceiveImageUrl",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "price",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isActive",
+              "type": "bool"
+            },
+            {
+              "internalType": "address",
+              "name": "farmer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "transporter",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct ProductTraceability.TraceInfo[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "transporter",
+          "type": "address"
+        }
+      ],
+      "name": "getProductsByTransporter",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "string",
+              "name": "productName",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "productId",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "farmName",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "plantingDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "plantingImageUrl",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "harvestDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "harvestImageUrl",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "transporterName",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "receiveDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "receiveImageUrl",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "deliveryDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "deliveryImageUrl",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "transportInfo",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "managerReceiveDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "managerReceiveImageUrl",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "price",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isActive",
+              "type": "bool"
+            },
+            {
+              "internalType": "address",
+              "name": "farmer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "transporter",
+              "type": "address"
+            }
+          ],
+          "internalType": "struct ProductTraceability.TraceInfo[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "bytes32",
           "name": "role",
           "type": "bytes32"
@@ -464,6 +800,16 @@
               "internalType": "bool",
               "name": "isActive",
               "type": "bool"
+            },
+            {
+              "internalType": "address",
+              "name": "farmer",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "transporter",
+              "type": "address"
             }
           ],
           "internalType": "struct ProductTraceability.TraceInfo",
@@ -642,6 +988,16 @@
           "internalType": "bool",
           "name": "isActive",
           "type": "bool"
+        },
+        {
+          "internalType": "address",
+          "name": "farmer",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "transporter",
+          "type": "address"
         }
       ],
       "stateMutability": "view",
@@ -705,6 +1061,63 @@
     {
       "inputs": [
         {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "transporterProducts",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_productId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_transporterName",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_deliveryDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_deliveryImageUrl",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_transportInfo",
+          "type": "string"
+        }
+      ],
+      "name": "updateDelivery",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
           "internalType": "string",
           "name": "_productId",
           "type": "string"
@@ -739,6 +1152,39 @@
         },
         {
           "internalType": "string",
+          "name": "_productName",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_farmName",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_harvestDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_harvestImageUrl",
+          "type": "string"
+        }
+      ],
+      "name": "updateProduct",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_productId",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
           "name": "_transporterName",
           "type": "string"
         },
@@ -753,22 +1199,12 @@
           "type": "string"
         },
         {
-          "internalType": "uint256",
-          "name": "_deliveryDate",
-          "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "_deliveryImageUrl",
-          "type": "string"
-        },
-        {
           "internalType": "string",
           "name": "_transportInfo",
           "type": "string"
         }
       ],
-      "name": "updateTrace",
+      "name": "updateReceive",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"

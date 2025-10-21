@@ -11,7 +11,7 @@ import './Dashboard.css';
 import { toast } from 'react-toastify';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-const CONTRACT_ADDRESS = '0xe68E71cc590D54bbD9F36fcC5A2354E310a3319A';
+const CONTRACT_ADDRESS = '0xBa59809d7a2490959145989975D57dE504A38141';
 
 interface AdminDashboardProps {
   contract: ethers.Contract | null;
