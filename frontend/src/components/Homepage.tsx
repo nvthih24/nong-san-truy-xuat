@@ -180,7 +180,7 @@ const Homepage: React.FC<HomepageProps> = ({ user: parentUser, setUser, onLoginS
       <header className="header">
         <div className="logo">
           <Link to="/">
-            <img src="/raumania.ico" alt="ThirtySix Logo" />
+            <img src="/3TMLDACN.ico" alt="ThirtySix Logo" />
             ThirtySix
           </Link>
         </div>
