@@ -45,6 +45,7 @@ const TransporterDashboard: React.FC<TransporterDashboardProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [products, setProducts] = useState<TraceInfo[]>([]);
 
+
   // Hàm lấy danh sách sản phẩm từ blockchain
   const fetchProducts = async () => {
     if (!contract || !account) {

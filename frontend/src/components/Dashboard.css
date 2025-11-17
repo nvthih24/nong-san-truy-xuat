@@ -158,3 +158,115 @@
     padding: 12px 28px;
     /* Làm nút to hơn một chút */
 }
+
+.product-list {
+    margin-top: 40px;
+    /* Khoảng cách với form bên trên */
+    padding-top: 30px;
+    border-top: 1px solid #e2e8f0;
+    /* Đường kẻ phân cách rõ ràng */
+}
+
+.product-list h3 {
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+    color: #334155;
+    font-weight: 600;
+}
+
+/* * QUAN TRỌNG: Wrapper này để xử lý cuộn ngang
+ * Bạn cần thêm <div class="table-wrapper"> bọc ngoài <table>
+ */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    /* Cho phép cuộn ngang khi bảng quá rộng */
+    border: 1px solid #e2e8f0;
+    /* Viền bao ngoài bảng */
+    border-radius: 12px;
+    /* Bo góc */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    /* Thêm bóng mờ nhẹ */
+    background: #fff;
+}
+
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    /* Gộp viền ô */
+    min-width: 800px;
+    /* Đặt chiều rộng tối thiểu để kích hoạt cuộn ngang */
+}
+
+.product-table th {
+    background: #f8fafc;
+    /* Nền xám rất nhạt cho header */
+    padding: 14px 18px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.875rem;
+    /* 14px */
+    color: #475569;
+    text-transform: uppercase;
+    /* Viết hoa tiêu đề cột */
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e2e8f0;
+    /* Viền dưới header đậm hơn */
+}
+
+.product-table td {
+    padding: 16px 18px;
+    border-bottom: 1px solid #e2e8f0;
+    /* Viền ngăn cách các hàng */
+    font-size: 0.95rem;
+    /* 15px */
+    color: #334155;
+    vertical-align: middle;
+    /* Căn giữa theo chiều dọc */
+}
+
+/* Style cho hàng khi hover */
+.product-table tbody tr:hover {
+    background-color: #f8fafc;
+    /* Đổi nền khi di chuột */
+}
+
+/* Bỏ viền cho hàng cuối cùng trong tbody */
+.product-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Style cho các link "Xem ảnh" */
+.product-table td a {
+    color: #16a34a;
+    /* Màu xanh lá cây chủ đạo */
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.12s ease;
+}
+
+.product-table td a:hover {
+    color: #15803d;
+    /* Đậm hơn khi hover */
+    text-decoration: underline;
+}
+
+/* Style cho Mã sản phẩm (ID) */
+.product-table td:nth-child(2) {
+    /* Cột thứ 2 */
+    font-family: monospace;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* Style cho trạng thái rỗng (Chưa có sản phẩm) */
+.product-list p {
+    text-align: center;
+    padding: 32px;
+    background: #f8fafc;
+    border-radius: 12px;
+    color: #64748b;
+    margin-top: 20px;
+    font-weight: 500;
+    border: 1px dashed #e2e8f0;
+}

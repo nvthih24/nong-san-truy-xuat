@@ -88,6 +88,7 @@ const Register: React.FC<RegisterProps> = ({ onClose, switchToLogin }) => {
               <option value="farmer">Nông dân</option>
               <option value="transporter">Nhà vận chuyển</option>
               <option value="manager">Quản lý</option>
+              <option value="moderator">Kiểm duyệt viên</option>
             </select>
           </div>
 

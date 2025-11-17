@@ -11,7 +11,7 @@ import './Dashboard.css';
 import { toast } from 'react-toastify';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-const CONTRACT_ADDRESS = '0xBa59809d7a2490959145989975D57dE504A38141';
+const CONTRACT_ADDRESS = '0xA9f069fBA249CF01BBF8fdA11E4518621e0f1E55';
 
 interface AdminDashboardProps {
   contract: ethers.Contract | null;
@@ -288,7 +288,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ contract, account, conn
       setQRCodes([...qrCodes, res.data.qrCode]);
       alert('✅ Tạo mã QR thành công!');
     } catch (error) {
-      console.error('❌ Lỗi khi tạo mã QR:', error);
+      console.error(' Lỗi khi tạo mã QR:', error);
       alert('Lỗi khi tạo mã QR!');
     }
   };
@@ -456,7 +456,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ contract, account, conn
         {!account ? (
           <button className="connect-wallet-btn" onClick={connectWallet}>Kết Nối Ví</button>
         ) : (
-          <div className="wallet-status">{truncateAddress(account)}</div>
+          <div className="wallet-status">admin</div>
         )}
       </div>
 

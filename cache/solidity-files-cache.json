@@ -39,8 +39,8 @@
       ]
     },
     "D:\\DACN\\nong-san-truy-xuat\\contracts\\ProductTraceability.sol": {
-      "lastModificationDate": 1761049414959,
-      "contentHash": "8796e890bf2055ea7286836cfdb9881c",
+      "lastModificationDate": 1762071828263,
+      "contentHash": "28bd5203d1b6904cb61eb58990cbff10",
       "sourceName": "contracts/ProductTraceability.sol",
       "solcConfig": {
         "version": "0.8.28",

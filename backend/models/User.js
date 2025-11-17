@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   address: { type: String, required: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ['farmer', 'transporter', 'manager', 'admin'], default: 'farmer' }  // Roles: nông dân, vận chuyển, quản lý, admin
+  role: { type: String, enum: ['farmer', 'transporter', 'manager', 'moderator', 'admin'], default: 'farmer' }  // Roles: nông dân, vận chuyển, quản lý, admin
 });
 
 userSchema.pre('save', async function(next) {

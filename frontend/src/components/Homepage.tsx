@@ -8,7 +8,7 @@ import Register from './Register';
 import { Html5Qrcode } from 'html5-qrcode';
 
 
-const CONTRACT_ADDRESS = '0xBa59809d7a2490959145989975D57dE504A38141';
+const CONTRACT_ADDRESS = '0xA9f069fBA249CF01BBF8fdA11E4518621e0f1E55';
 
 interface TraceInfo {
   productName: string;
@@ -50,70 +50,80 @@ const Homepage: React.FC<HomepageProps> = ({ user: parentUser, setUser, onLoginS
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [scanError, setScanError] = useState<string>('');
   const [scanner, setScanner] = useState<Html5Qrcode | null>(null);
-  const fetchTrace = async () => {
-    if (!productId.trim()) {
-      setError('Vui lòng nhập mã sản phẩm!');
-      return;
-    }
+const fetchTrace = async (id?: string) => {
+  const actualId = id || productId;  // Dùng id từ param nếu có, иначе dùng state
 
-    setError('');
-    setTraceInfo(null);
-    setLoading(true);
+  if (!actualId.trim()) {
+    setError('Vui lòng nhập mã sản phẩm!');
+    return;
+  }
 
+  setError('');
+  setTraceInfo(null);
+  setLoading(true);
+
+  // Đồng bộ state để input hiển thị giá trị (nếu fetch từ QR)
+  if (id) {
+    setProductId(actualId);
+  }
+
+  try {
+    const provider = new ethers.JsonRpcProvider('https://rpc.zeroscan.org');
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
+
+    const trace = await contract.getTrace(actualId);  // Dùng actualId thay vì productId
+
+    const formattedTrace: TraceInfo = {
+      productName: trace.productName,
+      productId: trace.productId,
+      farmName: trace.farmName,
+      plantingDate: Number(trace.plantingDate),
+      plantingImageUrl: trace.plantingImageUrl,
+      harvestDate: Number(trace.harvestDate),
+      harvestImageUrl: trace.harvestImageUrl,
+      transporterName: trace.transporterName,
+      receiveDate: Number(trace.receiveDate),
+      receiveImageUrl: trace.receiveImageUrl,
+      deliveryDate: Number(trace.deliveryDate),
+      deliveryImageUrl: trace.deliveryImageUrl,
+      transportInfo: trace.transportInfo,
+      managerReceiveDate: Number(trace.managerReceiveDate),
+      managerReceiveImageUrl: trace.managerReceiveImageUrl,
+      price: trace.price,
+      isActive: trace.isActive,
+    };
+
+    setTraceInfo(formattedTrace);
+  } catch (err: any) {
+    console.error('Lỗi khi truy xuất:', err);
+    setError(
+      err.reason || 'Không tìm thấy thông tin sản phẩm hoặc mã sản phẩm không hợp lệ!'
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handleScan = (data: string | null) => {
+  if (data) {
     try {
-      const provider = new ethers.JsonRpcProvider('https://rpc.zeroscan.org');
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
-
-      const trace = await contract.getTrace(productId);
-
-      const formattedTrace: TraceInfo = {
-        productName: trace.productName,
-        productId: trace.productId,
-        farmName: trace.farmName,
-        plantingDate: Number(trace.plantingDate),
-        plantingImageUrl: trace.plantingImageUrl,
-        harvestDate: Number(trace.harvestDate),
-        harvestImageUrl: trace.harvestImageUrl,
-        transporterName: trace.transporterName,
-        receiveDate: Number(trace.receiveDate),
-        receiveImageUrl: trace.receiveImageUrl,
-        deliveryDate: Number(trace.deliveryDate),
-        deliveryImageUrl: trace.deliveryImageUrl,
-        transportInfo: trace.transportInfo,
-        managerReceiveDate: Number(trace.managerReceiveDate),
-        managerReceiveImageUrl: trace.managerReceiveImageUrl,
-        price: trace.price,
-        isActive: trace.isActive,
-      };
-
-      setTraceInfo(formattedTrace);
-    } catch (err: any) {
-      console.error('Lỗi khi truy xuất:', err);
-      setError(
-        err.reason || 'Không tìm thấy thông tin sản phẩm hoặc mã sản phẩm không hợp lệ!'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-  const handleScan = (data: string | null) => {
-    if (data) {
-      try {
-        const url = new URL(data);
-        const productIdFromQR = url.pathname.split('/').pop();
-        if (productIdFromQR) {
-          setProductId(productIdFromQR);
-          setIsScanning(false);
-          setScanError('');
-          fetchTrace();
-        } else {
-          setScanError('Mã QR không hợp lệ!');
-        }
-      } catch (err) {
-        setScanError('Lỗi khi xử lý mã QR!');
+      const url = new URL(data);
+      const productIdFromQR = url.pathname.split('/').pop();
+      if (productIdFromQR) {
+        setScanError('');
+        setIsScanning(false);
+        fetchTrace(productIdFromQR);  // Gọi fetch ngay với id từ QR
+      } else {
+        setScanError('Mã QR không hợp lệ!');
       }
+    } catch (err) {
+      setScanError('Lỗi khi xử lý mã QR!');
     }
-  };
+  }
+};
+const handleSearchClick = () => {
+  fetchTrace(); // Dùng state productId
+};
 
   const handleScanError = (err: any) => {
     console.error('Lỗi khi quét QR:', err);
@@ -207,7 +217,9 @@ const Homepage: React.FC<HomepageProps> = ({ user: parentUser, setUser, onLoginS
               onChange={(e) => setProductId(e.target.value)}
               disabled={isScanning}
             />
-            <button onClick={fetchTrace} disabled={isScanning}>Truy xuất</button>
+            <button onClick={handleSearchClick} disabled={isScanning || loading}>
+  Truy xuất
+</button>
           </div>
 
           <div className="hero-divider">hoặc</div>

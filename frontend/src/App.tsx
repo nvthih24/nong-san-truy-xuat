@@ -14,6 +14,7 @@ import ManagerDashboard from './components/ManagerDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import About from './components/About';
 import Contact from './components/Contact';
+import ModeratorDashboard from './components/ModeratorDashboard';
 
 // Định nghĩa type cho window.ethereum
 declare global {
@@ -26,7 +27,7 @@ declare global {
   }
 }
 
-const CONTRACT_ADDRESS = "0xBa59809d7a2490959145989975D57dE504A38141";
+const CONTRACT_ADDRESS = "0xA9f069fBA249CF01BBF8fdA11E4518621e0f1E55";
 
 // Component chứa toàn bộ logic ứng dụng, nằm bên trong Router
 const AppContent: React.FC = () => {
@@ -122,6 +123,10 @@ const AppContent: React.FC = () => {
       <Route
         path="/manager"
         element={user && user.role === 'manager' ? <ManagerDashboard contract={contract} account={account} connectWallet={connectWallet} /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/moderator"
+        element={user && user.role === 'moderator' ? <ModeratorDashboard contract={contract} account={account} connectWallet={connectWallet} /> : <Navigate to="/login" />}
       />
       <Route
         path="/admin"

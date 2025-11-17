@@ -20,6 +20,8 @@ interface Product {
   plantingImageUrl: string;
   harvestDate: number;
   harvestImageUrl: string;
+  plantingStatus: number;
+  harvestStatus: number;
 }
 
 const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
@@ -57,6 +59,8 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
         plantingImageUrl: product.plantingImageUrl,
         harvestDate: Number(product.harvestDate),
         harvestImageUrl: product.harvestImageUrl,
+        plantingStatus: Number(product.plantingStatus),
+        harvestStatus: Number(product.harvestStatus),
       }));
       setProducts(formattedProducts);
     } catch (error) {
@@ -243,6 +247,13 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
     return new Date(timestamp * 1000).toLocaleString('vi-VN');
   };
 
+  // Hàm format trạng thái
+  const formatStatus = (status: number) => {
+    if (status === 0) return 'Chờ duyệt';
+    if (status === 1) return 'Đã duyệt';
+    return 'Bị từ chối';
+  };
+
   return (
     <div className="dashboard-container">
       <div className="dashboard-header">
@@ -412,6 +423,8 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
                 <th>Ảnh gieo trồng</th>
                 <th>Ngày thu hoạch</th>
                 <th>Ảnh thu hoạch</th>
+                <th>Trạng thái gieo trồng</th>
+                <th>Trạng thái thu hoạch</th>
               </tr>
             </thead>
             <tbody>
@@ -440,6 +453,8 @@ const FarmerDashboard: React.FC<FarmerDashboardProps> = ({
                       'Chưa có'
                     )}
                   </td>
+                  <td>{formatStatus(product.plantingStatus)}</td>
+                  <td>{product.harvestDate === 0 ? 'Chưa cập nhật' : formatStatus(product.harvestStatus)}</td>
                 </tr>
               ))}
             </tbody>
